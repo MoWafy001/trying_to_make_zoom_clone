@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
+    <title>messages</title>
+</head>
+<body>
+    <input type="text" id="roomID" placeholder="receiver id">
+    <input type="text" id="myRoomID" placeholder="my room id">
+    <input type="text" id="message" placeholder="messages">
+    <button onclick="send();">send</button>
+    <p>messages</p>
+
+
+
+    <video id="webcam" autoplay playsinline width="640" height="480"></video>
+    <canvas id="canvas" class="d-none" hidden></canvas>
+    <audio id="snapSound" src="audio/snap.wav" preload = "auto"></audio>
+
+
+    <img id="img">
+
+
+
+    <script>
+
+        msg = "";
+
+        const webcamElement = document.getElementById('webcam');
+        const canvasElement = document.getElementById('canvas');
+        const webcam = new Webcam(webcamElement, 'user', canvasElement);
+
+        async function takePic() {
+            msg = webcam.snap()
+            await send()
+            setTimeout(takePic,0)
+        }
+
+        p = document.querySelector("p")
+        async function send() {
+            id = document.getElementById("roomID").value;
+            await fetch("/send", {
+                    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                    mode: 'cors', // no-cors, *cors, same-origin
+                    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                    credentials: 'same-origin', // include, *same-origin, omit
+                    headers: {
+                    'Content-Type': 'application/json'
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    redirect: 'follow', // manual, *follow, error
+                    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                    body: JSON.stringify({id:id, msg:msg}) // body data type must match "Content-Type" header
+                })
+        }
+        async function receive() {
+            id = document.getElementById("myRoomID").value;
+            if (id != ""){
+                await fetch("/receive", {
+                    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                    mode: 'cors', // no-cors, *cors, same-origin
+                    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                    credentials: 'same-origin', // include, *same-origin, omit
+                    headers: {
+                    'Content-Type': 'application/json'
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    redirect: 'follow', // manual, *follow, error
+                    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                    body: JSON.stringify({id:id}) // body data type must match "Content-Type" header
+                })
+                .then(res=>{
+                    return res.json()
+                })
+                .then(data=>{
+                    img.src = data.messages
+                })
+            }
+            setTimeout(receive, 0);
+        }
+        receive()
+    </script>
+
+
+
+
+
+
+</body>
+</html>
