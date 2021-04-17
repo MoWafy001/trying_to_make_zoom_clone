@@ -10,13 +10,12 @@
 <body>
     <input type="text" id="roomID" placeholder="receiver id">
     <input type="text" id="myRoomID" placeholder="my room id">
-    <input type="text" id="message" placeholder="messages">
-    <button onclick="send();">send</button>
+    <button onclick="webcam.start();takePic();document.querySelector('video').hidden = false;">start</button>
     <p>messages</p>
 
 
 
-    <video id="webcam" autoplay playsinline width="640" height="480"></video>
+    <video hidden id="webcam" autoplay playsinline width="640" height="480"></video>
     <canvas id="canvas" class="d-none" hidden></canvas>
     <audio id="snapSound" src="audio/snap.wav" preload = "auto"></audio>
 
