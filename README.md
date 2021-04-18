@@ -1,1 +1,1 @@
-I should probably type something here, but I am so lazy.
+I should probably type something here, but I am too lazy.
